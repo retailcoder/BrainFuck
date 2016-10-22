@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using BrainFuck.Syntax;
 
 namespace BrainFuck
 {
@@ -10,5 +7,9 @@ namespace BrainFuck
     {
         private int[] _brain = new int[short.MaxValue];
 
+        public void Execute(SyntaxTree tree)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
