@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,10 @@ namespace BrainFuck.Syntax
         protected SyntaxNode(IList<Token> tokens)
         {
             Tokens = tokens;
+        }
+
+        public virtual void Execute(ExecutionContext context)
+        {
         }
 
         public void AddToken(Token token)
@@ -61,36 +66,80 @@ namespace BrainFuck.Syntax
     public sealed class MoveLeftInstructionSyntax : SyntaxNode
     {
         public MoveLeftInstructionSyntax(Token token) : base(new List<Token> { token }) { }
+
+        public override void Execute(ExecutionContext context)
+        {
+            context.MoveLeft();
+        }
     }
 
     public sealed class MoveRightInstructionSyntax : SyntaxNode
     {
         public MoveRightInstructionSyntax(Token token) : base(new List<Token> { token }) { }
+
+        public override void Execute(ExecutionContext context)
+        {
+            context.MoveRight();
+        }
     }
 
     public sealed class LoopBlockSyntax : SyntaxTree
     {
         public LoopBlockSyntax() : this(new List<SyntaxNode>()) { }
         public LoopBlockSyntax(IList<SyntaxNode> nodes) : base(nodes) { }
+
+        public override void Execute(ExecutionContext context)
+        {
+            var index = context.Pointer;
+            while (context.IsTrue(index))
+            foreach (var node in this.AsEnumerable<SyntaxNode>())
+            {
+                node.Execute(context);
+                if (context.IsTrue(index))
+                {
+                    break;
+                }
+            }
+        }
     }
 
     public sealed class IncrementInstructionSyntax : SyntaxNode
     {
         public IncrementInstructionSyntax(Token token) : base(new List<Token> { token }) { }
+
+        public override void Execute(ExecutionContext context)
+        {
+            context.Increment();
+        }
     }
 
     public sealed class DecrementInstructionSyntax : SyntaxNode
     {
         public DecrementInstructionSyntax(Token token) : base(new List<Token> { token }) { }
+
+        public override void Execute(ExecutionContext context)
+        {
+            context.Decrement();
+        }
     }
 
     public sealed class InputInstructionSyntax : SyntaxNode
     {
         public InputInstructionSyntax(Token token) : base(new List<Token> { token }) { }
+
+        public override void Execute(ExecutionContext context)
+        {
+            context.Input();
+        }
     }
 
     public sealed class OutputInstructionSyntax : SyntaxNode
     {
         public OutputInstructionSyntax(Token token) : base(new List<Token> { token }) { }
+
+        public override void Execute(ExecutionContext context)
+        {
+            context.Output();
+        }
     }
 }
