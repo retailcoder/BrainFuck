@@ -5,7 +5,7 @@ using BrainFuck.Tokens;
 
 namespace BrainFuck
 {
-    public class Parser
+    public static class Parser
     {
         private static readonly Dictionary<TokenType, Func<Token, SyntaxNode>> NodeFactories =
             new Dictionary<TokenType, Func<Token, SyntaxNode>>
