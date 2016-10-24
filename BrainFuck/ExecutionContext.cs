@@ -15,7 +15,6 @@ namespace BrainFuck
         private readonly int[] _memory;
         private readonly Func<int> _onInput;
         private readonly StringBuilder _stdOutput;
-        private readonly StringBuilder _errOutput;
 
         private int _pointer;
         public int Pointer => _pointer;

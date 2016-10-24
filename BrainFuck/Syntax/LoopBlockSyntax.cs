@@ -14,22 +14,14 @@ namespace BrainFuck.Syntax
         public override void Execute(ExecutionContext context)
         {
             var iterations = 0;
-            while(true)
+            while(context.IsTrue())
             {
                 foreach (var instruction in Children)
                 {
                     (instruction as IInstruction)?.Execute(context);
                 }
 
-                if (!context.IsTrue())
-                {
-                    return;
-                }
-
-                if (iterations == MaxIterations)
-                {
-                    throw new InfiniteLoopException();
-                }
+                if (iterations == MaxIterations) { throw new InfiniteLoopException(); }
                 iterations++;
             }
         }
