@@ -1,39 +1,55 @@
 using System;
+using System.Text;
 
 namespace BrainFuck
 {
     public class ExecutionContext
     {
-        public ExecutionContext(int memorySize = short.MaxValue)
+        public ExecutionContext(int memorySize = short.MaxValue, Func<int> onInput = null)
         {
+            _onInput = onInput;
             _memory = new int[memorySize];
+            _stdOutput = new StringBuilder();
         }
 
         private readonly int[] _memory;
+        private readonly Func<int> _onInput;
+        private readonly StringBuilder _stdOutput;
+        private readonly StringBuilder _errOutput;
 
         private int _pointer;
         public int Pointer => _pointer;
 
-        public bool IsTrue(int index)
+        public int Value => _memory[_pointer];
+
+        public string StdOut => _stdOutput.ToString();
+
+        public bool IsTrue(int position = -1)
         {
-            return _memory[index] != 0;
+            return (position == -1 ? _memory[_pointer] : _memory[position]) != 0;
         }
 
         public void MoveLeft()
         {
-            _pointer--;
-            if (_pointer < 0)
+            if (_pointer == 0)
             {
-                throw new InvalidOperationException();
+                _pointer = _memory.Length;
+            }
+            else
+            {
+                _pointer--;
             }
         }
 
         public void MoveRight()
         {
-            _pointer++;
-            if (_pointer > short.MaxValue)
+            if (_pointer == _memory.Length)
             {
-                throw new InvalidOperationException();
+                _pointer = 0;
+            }
+            else
+            {
+                _pointer++;
             }
         }
 
@@ -49,12 +65,12 @@ namespace BrainFuck
 
         public void Output()
         {
-            Console.Write((char)_memory[_pointer]);
+            _stdOutput.Append((char)_memory[_pointer]);
         }
 
         public void Input()
         {
-            _memory[_pointer] = Console.Read();
+            _memory[_pointer] = _onInput?.Invoke() ?? Console.Read();
         }
     }
 }

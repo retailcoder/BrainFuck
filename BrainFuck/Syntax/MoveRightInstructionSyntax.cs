@@ -1,13 +1,8 @@
-using System.Collections.Generic;
-using BrainFuck.Tokens;
-
 namespace BrainFuck.Syntax
 {
-    public sealed class MoveRightInstructionSyntax : SyntaxNode
+    public sealed class MoveRightInstructionSyntax : InstructionSyntaxTree
     {
-        public MoveRightInstructionSyntax(Token token) : base(new List<Token> { token }) { }
-
-        public override void Execute(ExecutionContext context)
+        protected override void ExecuteOnce(ExecutionContext context)
         {
             context.MoveRight();
         }

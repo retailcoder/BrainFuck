@@ -81,9 +81,19 @@ namespace BrainFuck.Tokens
         public Span Next => new Span(EndLine, EndColumn + 1);
 
         /// <summary>
+        /// Returns a new span with the same start position, ending on the same line at the previous column.
+        /// </summary>
+        public Span PreviousColumn => new Span(StartLine, StartColumn, EndLine, EndColumn - 1);
+
+        /// <summary>
         /// Returns a new span starting at the end of the current position.
         /// </summary>
         public Span End => new Span(EndLine, EndColumn);
+
+        public Span OffSet(int columns, int lines = 0)
+        {
+            return new Span(StartLine + lines, StartColumn + columns, EndLine + lines, EndColumn + columns);
+        }
 
         public Span Combine(Span other)
         {

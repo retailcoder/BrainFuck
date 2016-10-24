@@ -42,19 +42,21 @@
   <ItemGroup>
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="HashCode.cs" />
+    <Compile Include="IllegalInstructionException.cs" />
     <Compile Include="Interpreter.cs" />
+    <Compile Include="IllegalTokenException.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Syntax\DecrementInstructionSyntax.cs" />
+    <Compile Include="Syntax\IInstruction.cs" />
     <Compile Include="Syntax\IncrementInstructionSyntax.cs" />
     <Compile Include="Syntax\InputInstructionSyntax.cs" />
-    <Compile Include="Syntax\InvalidInstructionSyntax.cs" />
+    <Compile Include="Syntax\InstructionSyntaxTree.cs" />
     <Compile Include="Syntax\LoopBlockSyntax.cs" />
     <Compile Include="Syntax\MoveLeftInstructionSyntax.cs" />
     <Compile Include="Syntax\MoveRightInstructionSyntax.cs" />
     <Compile Include="Syntax\OutputInstructionSyntax.cs" />
-    <Compile Include="Syntax\SyntaxNode.cs" />
     <Compile Include="Syntax\SyntaxTree.cs" />
     <Compile Include="Syntax\TriviaSyntax.cs" />
     <Compile Include="Tokens\Span.cs" />

@@ -1,13 +1,8 @@
-using System.Collections.Generic;
-using BrainFuck.Tokens;
-
 namespace BrainFuck.Syntax
 {
-    public sealed class InputInstructionSyntax : SyntaxNode
+    public sealed class InputInstructionSyntax : InstructionSyntaxTree
     {
-        public InputInstructionSyntax(Token token) : base(new List<Token> { token }) { }
-
-        public override void Execute(ExecutionContext context)
+        protected override void ExecuteOnce(ExecutionContext context)
         {
             context.Input();
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using BrainFuck.Syntax;
 using BrainFuck.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,9 +13,21 @@ namespace BrainFuck.Tests
         {
             var code = "ABC";
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.Count());
+        }
+
+        [TestMethod]
+        public void TriviaTokenSpansTriviaLength()
+        {
+            var code = "ABC";
+
+            var lexer = new Lexer();
+            var token = lexer.Tokenize(code).First();
+
+            Assert.AreEqual(new Span(0, 0, 0, 2), token.Position);
         }
 
         [TestMethod]
@@ -24,7 +35,8 @@ namespace BrainFuck.Tests
         {
             var code = "any non token character is ignored in BrainFuck";
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.Count());
         }
@@ -35,7 +47,8 @@ namespace BrainFuck.Tests
             var code = Environment.NewLine + "any non token character " +
                        Environment.NewLine + "is ignored in BrainFuck";
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.Count());
         }
@@ -45,7 +58,8 @@ namespace BrainFuck.Tests
         {
             var code = MoveLeftToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.OfType<MoveLeftToken>().Count());
         }
@@ -55,7 +69,8 @@ namespace BrainFuck.Tests
         {
             var code = MoveRightToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.OfType<MoveRightToken>().Count());
         }
@@ -65,7 +80,8 @@ namespace BrainFuck.Tests
         {
             var code = IncrementToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.OfType<IncrementToken>().Count());
         }
@@ -75,7 +91,8 @@ namespace BrainFuck.Tests
         {
             var code = DecrementToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.OfType<DecrementToken>().Count());
         }
@@ -85,7 +102,8 @@ namespace BrainFuck.Tests
         {
             var code = BeginLoopToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.OfType<BeginLoopToken>().Count());
         }
@@ -95,7 +113,8 @@ namespace BrainFuck.Tests
         {
             var code = EndLoopToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.OfType<EndLoopToken>().Count());
         }
@@ -105,7 +124,8 @@ namespace BrainFuck.Tests
         {
             var code = InputToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.OfType<InputToken>().Count());
         }
@@ -115,7 +135,8 @@ namespace BrainFuck.Tests
         {
             var code = OutputToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(1, tokens.OfType<OutputToken>().Count());
         }
@@ -126,7 +147,8 @@ namespace BrainFuck.Tests
             var code = "this is a comment" + Environment.NewLine +
                        IncrementToken.Token + IncrementToken.Token + OutputToken.Token;
 
-            var tokens = Lexer.Tokenize(code).ToList();
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code).ToList();
 
             Assert.AreEqual(1, tokens.OfType<TriviaToken>().Count());
             Assert.AreEqual(2, tokens.OfType<IncrementToken>().Count());
@@ -137,7 +159,8 @@ namespace BrainFuck.Tests
         public void InstructionTokenLength()
         {
             var code = IncrementToken.Token;
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             var token = tokens.OfType<IncrementToken>().FirstOrDefault();
             Assert.IsNotNull(token);
@@ -148,7 +171,8 @@ namespace BrainFuck.Tests
         public void TriviaTokenLength()
         {
             var code = "expected length is 21";
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             var token = tokens.OfType<TriviaToken>().FirstOrDefault();
             Assert.IsNotNull(token);
@@ -162,7 +186,8 @@ namespace BrainFuck.Tests
             var code = "this is a comment" + Environment.NewLine +
                        IncrementToken.Token + IncrementToken.Token + OutputToken.Token;
 
-            var tokens = string.Join(string.Empty, Lexer.Tokenize(code).Select(token => token.Text).ToList());
+            var lexer = new Lexer();
+            var tokens = string.Join(string.Empty, lexer.Tokenize(code).Select(token => token.Text).ToList());
 
             Assert.AreEqual(code, tokens);
         }
@@ -172,7 +197,8 @@ namespace BrainFuck.Tests
         {
             var code = MoveLeftToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
             Assert.AreEqual(code, tokens.Single().Text);
         }
 
@@ -181,7 +207,8 @@ namespace BrainFuck.Tests
         {
             var code = MoveRightToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
             Assert.AreEqual(code, tokens.Single().Text);
         }
 
@@ -190,7 +217,8 @@ namespace BrainFuck.Tests
         {
             var code = IncrementToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
             Assert.AreEqual(code, tokens.Single().Text);
         }
 
@@ -199,7 +227,8 @@ namespace BrainFuck.Tests
         {
             var code = DecrementToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
             Assert.AreEqual(code, tokens.Single().Text);
         }
 
@@ -208,7 +237,8 @@ namespace BrainFuck.Tests
         {
             var code = BeginLoopToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
             Assert.AreEqual(code, tokens.Single().Text);
         }
 
@@ -217,7 +247,8 @@ namespace BrainFuck.Tests
         {
             var code = EndLoopToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
             Assert.AreEqual(code, tokens.Single().Text);
         }
 
@@ -226,7 +257,8 @@ namespace BrainFuck.Tests
         {
             var code = InputToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
             Assert.AreEqual(code, tokens.Single().Text);
         }
 
@@ -235,7 +267,8 @@ namespace BrainFuck.Tests
         {
             var code = OutputToken.Token;
 
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
             Assert.AreEqual(code, tokens.Single().Text);
         }
 
@@ -244,7 +277,8 @@ namespace BrainFuck.Tests
         {
             var code = "this is a comment" + Environment.NewLine;
 
-            var tokens = Lexer.Tokenize(code).ToList();
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code).ToList();
 
             Assert.AreEqual(2, tokens.OfType<TriviaToken>().First().Position.Lines);
         }
@@ -266,7 +300,8 @@ namespace BrainFuck.Tests
 +++++<] >.[-]] << ++++++[-< ++++++++>] <.[-] <<[-< +>] +[-< +]->>] +[-] <<<.>>> +[
 -< +] -<<]
 ";
-            var tokens = Lexer.Tokenize(code);
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code);
 
             Assert.AreEqual(code.Count(c => c == IncrementToken.Token[0]), tokens.OfType<IncrementToken>().Count());
         }
@@ -275,7 +310,9 @@ namespace BrainFuck.Tests
         public void SpanStartsAtL0C0()
         {
             var code = ".";
-            var token = Lexer.Tokenize(code).Single();
+
+            var lexer = new Lexer();
+            var token = lexer.Tokenize(code).Single();
 
             var span = token.Position;
             var expected = new Span(0, 0, 0, 0);
@@ -287,7 +324,8 @@ namespace BrainFuck.Tests
         {
             var code = "ABC" + Environment.NewLine;
 
-            var tokens = Lexer.Tokenize(code).ToArray();
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code).ToArray();
             var combined = Span.Combine(tokens.Select(t => t.Position).ToArray());
 
             Assert.AreEqual(2, combined.Lines);
@@ -298,7 +336,8 @@ namespace BrainFuck.Tests
         {
             var code = "ABC" + Environment.NewLine + Environment.NewLine;
 
-            var tokens = Lexer.Tokenize(code).ToArray();
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenize(code).ToArray();
             var combined = Span.Combine(tokens.Select(t => t.Position).ToArray());
 
             Assert.AreEqual(3, combined.Lines);
@@ -309,8 +348,9 @@ namespace BrainFuck.Tests
         {
             var code = "line1" + Environment.NewLine + "line2";
 
-            var token = Lexer.Tokenize(code).Single();
-            var expected = new Span(0, 0, 1, 5);
+            var lexer = new Lexer();
+            var token = lexer.Tokenize(code).Single();
+            var expected = new Span(0, 0, 1, 4);
             Assert.AreEqual(expected, token.Position);
         }
 
@@ -319,7 +359,8 @@ namespace BrainFuck.Tests
         {
             var code = "+++++>";
 
-            var token = Lexer.Tokenize(code).OfType<MoveRightToken>().Single();
+            var lexer = new Lexer();
+            var token = lexer.Tokenize(code).OfType<MoveRightToken>().Single();
             var expected = new Span(0, 5);
             Assert.AreEqual(expected, token.Position);
         }
@@ -329,7 +370,8 @@ namespace BrainFuck.Tests
         {
             var code = "+++" + Environment.NewLine + "some trivia" + Environment.NewLine + "+++.<<<";
 
-            var token = Lexer.Tokenize(code).OfType<OutputToken>().Single();
+            var lexer = new Lexer();
+            var token = lexer.Tokenize(code).OfType<OutputToken>().Single();
             var expected = new Span(2, 3);
             Assert.AreEqual(expected, token.Position);
         }
@@ -339,7 +381,8 @@ namespace BrainFuck.Tests
         {
             var code = "+" + Environment.NewLine + "abc" + Environment.NewLine + "+.<";
 
-            var token = Lexer.Tokenize(code).OfType<TriviaToken>().Single();
+            var lexer = new Lexer();
+            var token = lexer.Tokenize(code).OfType<TriviaToken>().Single();
             var expected = new Span(0, 1, 2, 0);
 
             Assert.AreEqual(expected, token.Position);

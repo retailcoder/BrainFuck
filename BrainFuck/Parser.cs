@@ -1,64 +1,104 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BrainFuck.Syntax;
 using BrainFuck.Tokens;
 
 namespace BrainFuck
 {
-    public static class Parser
+    public class Parser
     {
-        private static readonly Dictionary<TokenType, Func<Token, SyntaxNode>> NodeFactories =
-            new Dictionary<TokenType, Func<Token, SyntaxNode>>
+        private static readonly Dictionary<TokenType, Func<SyntaxTree>> SyntaxTrees =
+            new Dictionary<TokenType, Func<SyntaxTree>>
             {
-                {TokenType.Trivia, token => new TriviaSyntax(token)},
-                {TokenType.Increment, token => new IncrementInstructionSyntax(token)},
-                {TokenType.Decrement, token => new DecrementInstructionSyntax(token)},
-                {TokenType.MoveLeft, token => new MoveLeftInstructionSyntax(token)},
-                {TokenType.MoveRight, token => new MoveRightInstructionSyntax(token)},
-                {TokenType.Input, token => new InputInstructionSyntax(token)},
-                {TokenType.Output, token => new OutputInstructionSyntax(token)},
+                {TokenType.Trivia, () => new TriviaSyntax()},
+                {TokenType.Increment, () => new IncrementInstructionSyntax()},
+                {TokenType.Decrement, () => new DecrementInstructionSyntax()},
+                {TokenType.MoveLeft, () => new MoveLeftInstructionSyntax()},
+                {TokenType.MoveRight, () => new MoveRightInstructionSyntax()},
+                {TokenType.Input, () => new InputInstructionSyntax()},
+                {TokenType.Output, () => new OutputInstructionSyntax()},
             };
 
-        public static SyntaxTree Parse(Token[] tokens)
+        public SyntaxTree Parse(Token[] tokens)
         {
             var index = 0;
-            return Parse(tokens, ref index);
+            var depth = 0;
+            return Parse(tokens, ref index, ref depth);
         }
 
-        private static SyntaxTree Parse(IReadOnlyList<Token> tokens, ref int index, SyntaxTree root = null)
+        private static SyntaxTree Parse(IReadOnlyList<Token> tokens, ref int index, ref int depth, SyntaxTree root = null)
         {
-            if (root == null)
+            if(root == null)
             {
                 root = new SyntaxTree();
             }
 
-            while (index < tokens.Count)
+            Token previousToken = null;
+            SyntaxTree currentTree = null;
+            SyntaxTree previousTree = null;
+
+            while(index < tokens.Count)
             {
                 var token = tokens[index];
                 index++;
 
-                Func<Token, SyntaxNode> factory;
-                if (NodeFactories.TryGetValue(token.Type, out factory))
+                Func<SyntaxTree> treeFactory;
+                if(SyntaxTrees.TryGetValue(token.Type, out treeFactory))
                 {
-                    root.Add(factory.Invoke(token));
+                    // trivia or instruction token
+                    if(previousToken?.Type == token.Type)
+                    {
+                        previousTree?.Add(token);
+                    }
+                    else
+                    {
+                        if (previousTree != null)
+                        {
+                            root.Add(previousTree);
+                        }
+
+                        currentTree = treeFactory.Invoke();
+                        currentTree.Add(token);
+                    }
                 }
                 else
                 {
+                    // control flow token
+                    if(previousTree != null)
+                    {
+                        root.Add(previousTree);
+                    }
                     switch(token.Type)
                     {
                         case TokenType.BeginLoop:
-                            var block = new LoopBlockSyntax();
-                            block.AddToken(token);
-                            root.Add(Parse(tokens, ref index, block));
+                            depth++;
+                            currentTree = Parse(tokens, ref index, ref depth, new LoopBlockSyntax { token });
                             break;
 
                         case TokenType.EndLoop:
-                            root.AddToken(token);
+                            if(depth == 0)
+                            {
+                                throw new IllegalTokenException(token);
+                            }
+                            depth--;
+
+                            root.Add(token);
                             return root;
+
+                        default:
+                            throw new IllegalTokenException(token);
                     }
                 }
+
+                previousToken = token;
+                previousTree = currentTree;
             }
 
+            if (previousTree != null)
+            {
+                root.Add(previousTree);
+            }
             return root;
         }
     }

@@ -15,7 +15,7 @@ namespace BrainFuck
         /// Yields tokens from the input stream.
         /// </summary>
         /// <param name="input">Any stream of BrainFuck source code.</param>
-        public static IEnumerable<Token> Tokenize(System.IO.Stream input)
+        public IEnumerable<Token> Tokenize(System.IO.Stream input)
         {
             var reader = new System.IO.StreamReader(input);
             var currentTokenPosition = Span.Empty;
@@ -74,6 +74,7 @@ namespace BrainFuck
 
             if (builder.Length != 0)
             {
+                currentTriviaSpan = currentTriviaSpan.PreviousColumn;
                 yield return new TriviaToken(currentTriviaSpan, tokenCount, builder.ToString());
                 builder.Clear();
             }
@@ -83,7 +84,7 @@ namespace BrainFuck
         /// Returns tokens from input string.
         /// </summary>
         /// <param name="input">BrainFuck source code</param>
-        public static IEnumerable<Token> Tokenize(string input)
+        public IEnumerable<Token> Tokenize(string input)
         {
             using (var stream = new System.IO.MemoryStream())
             {

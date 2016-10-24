@@ -1,77 +1,103 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using BrainFuck.Tokens;
 
 namespace BrainFuck.Syntax
 {
-    public class SyntaxTree : SyntaxNode, IEnumerable<Token>, ICollection<SyntaxNode>
+    public class SyntaxTree : ICollection<Token>, ICollection<SyntaxTree>
     {
-        private readonly IList<SyntaxNode> _nodes;
+        private readonly IList<Token> _tokens = new List<Token>();
 
-        public SyntaxTree() : this(new List<SyntaxNode>()) { }
+        public IEnumerable<Token> Tokens => _tokens;
 
-        public SyntaxTree(IList<SyntaxNode> nodes)
-            : base(nodes.SelectMany(node => node).ToList())
-        {
-            _nodes = nodes;
-        }
+        private readonly IList<SyntaxTree> _children = new List<SyntaxTree>();
+        public IEnumerable<SyntaxTree> Children => _children;
 
         IEnumerator<Token> IEnumerable<Token>.GetEnumerator()
         {
-            return _nodes.SelectMany(node => node).AsEnumerable().GetEnumerator();
+            return _tokens.GetEnumerator();
         }
 
-        public IEnumerator<SyntaxNode> GetEnumerator()
+        IEnumerator<SyntaxTree> IEnumerable<SyntaxTree>.GetEnumerator()
         {
-            return _nodes.GetEnumerator();
+            return _children.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return ((IEnumerable<SyntaxTree>)this).GetEnumerator();
         }
 
-        public void Add(SyntaxNode item)
+        public void Add(Token item)
+        {
+            _tokens.Add(item);
+        }
+
+        public void Add(SyntaxTree item)
+        {
+            foreach(var token in item.Tokens)
+            {
+                _tokens.Add(token);
+            }
+            _children.Add(item);
+        }
+
+        void ICollection<Token>.Clear()
+        {
+            _tokens.Clear();
+        }
+
+        void ICollection<SyntaxTree>.Clear()
+        {
+            _tokens.Clear();
+            _children.Clear();
+        }
+
+        public bool Contains(Token item)
+        {
+            return _tokens.Contains(item);
+        }
+
+        public bool Contains(SyntaxTree item)
+        {
+            return _children.Contains(item);
+        }
+
+        public void CopyTo(Token[] array, int arrayIndex)
+        {
+            _tokens.CopyTo(array, arrayIndex);
+        }
+
+        public void CopyTo(SyntaxTree[] array, int arrayIndex)
+        {
+            _children.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(Token item)
+        {
+            return _tokens.Remove(item);
+        }
+
+        public bool Remove(SyntaxTree item)
         {
             foreach (var token in item.Tokens)
             {
-                Tokens.Add(token);
+                _tokens.Remove(token);
             }
-            _nodes.Add(item);
+            return _children.Remove(item);
         }
 
-        public void Clear()
-        {
-            Tokens.Clear();
-            _nodes.Clear();
-        }
+        int ICollection<Token>.Count => _tokens.Count;
+        int ICollection<SyntaxTree>.Count => _children.Count;
 
-        public bool Contains(SyntaxNode item)
-        {
-            return _nodes.Contains(item);
-        }
-
-        public void CopyTo(SyntaxNode[] array, int arrayIndex)
-        {
-            _nodes.CopyTo(array, arrayIndex);
-        }
-
-        public bool Remove(SyntaxNode item)
-        {
-            return _nodes.Remove(item);
-        }
-
-        public int Count => _nodes.Count;
-        public bool IsReadOnly => false;
+        bool ICollection<Token>.IsReadOnly => false;
+        bool ICollection<SyntaxTree>.IsReadOnly => false;
 
         public override string ToString()
         {
-            var builder = new StringBuilder();
-            var tokens = _nodes.SelectMany(node => node.Tokens).OrderBy(token => token.Index);
-
-            foreach(var token in tokens)
+            var builder = new StringBuilder();                                  
+            foreach(var token in Tokens)
             {
                 builder.Append(token);
             }

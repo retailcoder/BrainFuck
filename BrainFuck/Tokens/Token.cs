@@ -6,10 +6,8 @@ namespace BrainFuck.Tokens
     /// <summary>
     /// A base class for all language tokens.
     /// </summary>
-    public abstract class Token : IEquatable<Token>
+    public abstract class Token : IEquatable<Token>, IComparable<Token>
     {
-        private readonly int _index;
-
         private static readonly IDictionary<TokenType, string> Tokens =
             new Dictionary<TokenType, string>
         {
@@ -31,12 +29,11 @@ namespace BrainFuck.Tokens
 
         protected Token(Span position, int index, string text)
         {
-            _index = index;
+            Index = index;
             Type = TokenType.Trivia;
             Position = position;
             Text = text;
         }
-
 
         /// <summary>
         /// The type of token.
@@ -64,6 +61,16 @@ namespace BrainFuck.Tokens
                 && other.Type == Type
                 && other.Position == Position
                 && other.Text == Text;
+        }
+
+        public int CompareTo(Token other)
+        {
+            if (other == null)
+            {
+                return Position.CompareTo(Span.Empty);
+            }
+
+            return Position.CompareTo(other.Position);
         }
 
         public override string ToString()

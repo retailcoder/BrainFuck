@@ -1,13 +1,8 @@
-using System.Collections.Generic;
-using BrainFuck.Tokens;
-
 namespace BrainFuck.Syntax
 {
-    public sealed class IncrementInstructionSyntax : SyntaxNode
+    public sealed class IncrementInstructionSyntax : InstructionSyntaxTree
     {
-        public IncrementInstructionSyntax(Token token) : base(new List<Token> { token }) { }
-
-        public override void Execute(ExecutionContext context)
+        protected override void ExecuteOnce(ExecutionContext context)
         {
             context.Increment();
         }

@@ -1,16 +1,21 @@
-﻿using System;
-using BrainFuck.Syntax;
+﻿using BrainFuck.Syntax;
 
 namespace BrainFuck
 {
     public class Interpreter
     {
+        private readonly ExecutionContext _context;
+
+        public Interpreter(ExecutionContext context)
+        {
+            _context = context;
+        }
+
         public void Execute(SyntaxTree tree)
         {
-            var context = new ExecutionContext();
-            foreach (var node in tree)
+            foreach (var instruction in tree.Children)
             {
-                node.Execute(context);
+                (instruction as IInstruction)?.Execute(_context);
             }
         }
     }

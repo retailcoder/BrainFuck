@@ -1,28 +1,41 @@
-using System.Collections.Generic;
-using System.Linq;
+using System;
 
 namespace BrainFuck.Syntax
 {
-    public sealed class LoopBlockSyntax : SyntaxTree
+    public sealed class LoopBlockSyntax : InstructionSyntaxTree
     {
-        public LoopBlockSyntax() : this(new List<SyntaxNode>()) { }
-        public LoopBlockSyntax(IList<SyntaxNode> nodes) : base(nodes) { }
+        private const int MaxIterations = short.MaxValue;
+
+        protected override void ExecuteOnce(ExecutionContext context)
+        {
+            throw new NotSupportedException();
+        }
 
         public override void Execute(ExecutionContext context)
         {
-            var index = context.Pointer;
-            while (context.IsTrue(index))
+            var iterations = 0;
+            while(true)
             {
-                var nodes = this.AsEnumerable<SyntaxNode>().ToList();
-                foreach (var node in nodes)
+                foreach (var instruction in Children)
                 {
-                    node.Execute(context);
-                    if (!context.IsTrue(index))
-                    {
-                        break;
-                    }
+                    (instruction as IInstruction)?.Execute(context);
                 }
+
+                if (!context.IsTrue())
+                {
+                    return;
+                }
+
+                if (iterations == MaxIterations)
+                {
+                    throw new InfiniteLoopException();
+                }
+                iterations++;
             }
         }
+    }
+
+    public class InfiniteLoopException : Exception
+    {
     }
 }
