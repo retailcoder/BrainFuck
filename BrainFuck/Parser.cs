@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using BrainFuck.Syntax;
 using BrainFuck.Tokens;
 
@@ -35,7 +34,7 @@ namespace BrainFuck
             SyntaxTree currentTree = null;
             SyntaxTree previousTree = null;
 
-            while(index < tokens.Count)
+            for(var i = index; index < tokens.Count; i++)
             {
                 var token = tokens[index];
                 index++;
@@ -100,7 +99,7 @@ namespace BrainFuck
         {
             if (tree != null)
             {
-                root.Add(tree);
+                root?.Add(tree);
             }
         }
     }
