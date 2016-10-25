@@ -109,14 +109,14 @@ namespace BrainFuck
         private static readonly IDictionary<string, Func<Span, int, Token>>
             TokenFactories = new Dictionary<string, Func<Span, int, Token>>
             {
-                {MoveLeftToken.Token, (span, index) => new MoveLeftToken(span, index)},
-                {MoveRightToken.Token, (span, index) => new MoveRightToken(span, index)},
-                {BeginLoopToken.Token, (span, index) => new BeginLoopToken(span, index)},
-                {EndLoopToken.Token, (span, index) => new EndLoopToken(span, index)},
-                {IncrementToken.Token, (span, index) => new IncrementToken(span, index)},
-                {DecrementToken.Token, (span, index) => new DecrementToken(span, index)},
-                {InputToken.Token, (span, index) => new InputToken(span, index)},
-                {OutputToken.Token, (span, index) => new OutputToken(span, index)},
+                [MoveLeftToken.Token] = (span, index) =>  new MoveLeftToken(span, index),
+                [MoveRightToken.Token] = (span, index) => new MoveRightToken(span, index),
+                [BeginLoopToken.Token] = (span, index) => new BeginLoopToken(span, index),
+                [EndLoopToken.Token] = (span, index) => new EndLoopToken(span, index),
+                [IncrementToken.Token] = (span, index) => new IncrementToken(span, index),
+                [DecrementToken.Token] = (span, index) => new DecrementToken(span, index),
+                [InputToken.Token] = (span, index) => new InputToken(span, index),
+                [OutputToken.Token] = (span, index) => new OutputToken(span, index),
             };
 
         private static bool IsToken(Span position, int index, char input, out Token token)

@@ -15,9 +15,6 @@ namespace BrainFuck.Syntax
             }
         }
 
-        public override string ToString()
-        {
-            return $"{GetType().Name} x{Tokens.Count()}";
-        }
+        public override string ToString() => $"{GetType().Name} x{Tokens.Count()}";
     }
 }
