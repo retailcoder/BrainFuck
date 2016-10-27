@@ -1,11 +1,10 @@
 using System;
+using System.Linq;
 
 namespace BrainFuck.Syntax
 {
     public sealed class LoopBlockSyntax : InstructionSyntaxTree
     {
-        private const int MaxIterations = short.MaxValue;
-
         protected override void ExecuteOnce(ExecutionContext context)
         {
             throw new NotSupportedException();
@@ -21,13 +20,13 @@ namespace BrainFuck.Syntax
                     (instruction as IInstruction)?.Execute(context);
                 }
 
-                if (iterations == MaxIterations) { throw new InfiniteLoopException(); }
+                if (iterations == context.Size) { throw new InfiniteLoopException(); }
                 iterations++;
             }
         }
+
+        public override string ToString() => $"{GetType()} ({Children.Count()} instructions)";
     }
 
-    public class InfiniteLoopException : Exception
-    {
-    }
+    public class InfiniteLoopException : Exception { }
 }

@@ -14,20 +14,9 @@ namespace BrainFuck.Syntax
         private readonly IList<SyntaxTree> _children = new List<SyntaxTree>();
         public IEnumerable<SyntaxTree> Children => _children;
 
-        IEnumerator<Token> IEnumerable<Token>.GetEnumerator()
-        {
-            return _tokens.GetEnumerator();
-        }
-
-        IEnumerator<SyntaxTree> IEnumerable<SyntaxTree>.GetEnumerator()
-        {
-            return _children.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<SyntaxTree>)this).GetEnumerator();
-        }
+        IEnumerator<Token> IEnumerable<Token>.GetEnumerator() => _tokens.GetEnumerator();
+        IEnumerator<SyntaxTree> IEnumerable<SyntaxTree>.GetEnumerator() => _children.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<SyntaxTree>)this).GetEnumerator();
 
         public void Add(Token item)
         {
@@ -54,15 +43,8 @@ namespace BrainFuck.Syntax
             _children.Clear();
         }
 
-        public bool Contains(Token item)
-        {
-            return _tokens.Contains(item);
-        }
-
-        public bool Contains(SyntaxTree item)
-        {
-            return _children.Contains(item);
-        }
+        public bool Contains(Token item) => _tokens.Contains(item);
+        public bool Contains(SyntaxTree item) => _children.Contains(item);
 
         public void CopyTo(Token[] array, int arrayIndex)
         {
@@ -74,11 +56,7 @@ namespace BrainFuck.Syntax
             _children.CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(Token item)
-        {
-            return _tokens.Remove(item);
-        }
-
+        public bool Remove(Token item) => _tokens.Remove(item);
         public bool Remove(SyntaxTree item)
         {
             foreach (var token in item.Tokens)

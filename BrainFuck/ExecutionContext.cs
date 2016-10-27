@@ -5,71 +5,64 @@ namespace BrainFuck
 {
     public class ExecutionContext
     {
-        public ExecutionContext(int memorySize = short.MaxValue, Func<int> onInput = null)
+        public ExecutionContext(int memorySize = short.MaxValue, Action<char> onOutput = null, Func<int> onInput = null)
         {
+            _onOutput = onOutput;
             _onInput = onInput;
             _memory = new int[memorySize];
             _stdOutput = new StringBuilder();
         }
 
         private readonly int[] _memory;
-        private readonly Func<int> _onInput;
         private readonly StringBuilder _stdOutput;
 
-        private int _pointer;
-        public int Pointer => _pointer;
+        private readonly Action<char> _onOutput;
+        private readonly Func<int> _onInput;
 
-        public int Value => _memory[_pointer];
+        public int Size => _memory.Length;
+        public int Pointer { get; private set; }
+        public int Value => _memory[Pointer];
+        public bool IsTrue(int? position = null) => _memory[position ?? Pointer] != 0;
 
         public string StdOut => _stdOutput.ToString();
 
-        public bool IsTrue(int position = -1)
-        {
-            return (position == -1 ? _memory[_pointer] : _memory[position]) != 0;
-        }
-
         public void MoveLeft()
         {
-            if (_pointer == 0)
+            if (Pointer == 0)
             {
-                _pointer = _memory.Length;
+                Pointer = _memory.Length;
             }
             else
             {
-                _pointer--;
+                Pointer--;
             }
         }
 
         public void MoveRight()
         {
-            if (_pointer == _memory.Length)
+            if (Pointer == _memory.Length)
             {
-                _pointer = 0;
+                Pointer = 0;
             }
             else
             {
-                _pointer++;
+                Pointer++;
             }
         }
 
-        public void Increment()
-        {
-            _memory[_pointer] += 1;
-        }
-
-        public void Decrement()
-        {
-            _memory[_pointer] -= 1;
-        }
+        public void Increment() => _memory[Pointer]++;
+        public void Decrement() => _memory[Pointer]--;
 
         public void Output()
         {
-            _stdOutput.Append((char)_memory[_pointer]);
+            var output = (char) _memory[Pointer];
+            _onOutput?.Invoke(output);
+            _stdOutput.Append(output);
         }
 
         public void Input()
         {
-            _memory[_pointer] = _onInput?.Invoke() ?? Console.Read();
+            _memory[Pointer] = _onInput?.Invoke() ?? Console.Read();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using BrainFuck.Syntax;
 using BrainFuck.Tokens;
 
@@ -11,13 +10,13 @@ namespace BrainFuck
         private static readonly Dictionary<TokenType, Func<SyntaxTree>> SyntaxTrees =
             new Dictionary<TokenType, Func<SyntaxTree>>
             {
-                {TokenType.Trivia, () => new TriviaSyntax()},
-                {TokenType.Increment, () => new IncrementInstructionSyntax()},
-                {TokenType.Decrement, () => new DecrementInstructionSyntax()},
-                {TokenType.MoveLeft, () => new MoveLeftInstructionSyntax()},
-                {TokenType.MoveRight, () => new MoveRightInstructionSyntax()},
-                {TokenType.Input, () => new InputInstructionSyntax()},
-                {TokenType.Output, () => new OutputInstructionSyntax()},
+                [TokenType.Trivia] = () => new TriviaSyntax(),
+                [TokenType.Increment] = () => new IncrementInstructionSyntax(),
+                [TokenType.Decrement] = () => new DecrementInstructionSyntax(),
+                [TokenType.MoveLeft] = () => new MoveLeftInstructionSyntax(),
+                [TokenType.MoveRight] = () => new MoveRightInstructionSyntax(),
+                [TokenType.Input] = () => new InputInstructionSyntax(),
+                [TokenType.Output] = () => new OutputInstructionSyntax(),
             };
 
         public SyntaxTree Parse(Token[] tokens)
@@ -27,18 +26,15 @@ namespace BrainFuck
             return Parse(tokens, ref index, ref depth);
         }
 
-        private static SyntaxTree Parse(IReadOnlyList<Token> tokens, ref int index, ref int depth, SyntaxTree root = null)
+        private static SyntaxTree Parse(IReadOnlyList<Token> tokens, ref int index, ref int depth, SyntaxTree parent = null)
         {
-            if(root == null)
-            {
-                root = new SyntaxTree();
-            }
+            if(parent == null) { parent = new SyntaxTree(); }
 
             Token previousToken = null;
             SyntaxTree currentTree = null;
             SyntaxTree previousTree = null;
 
-            while(index < tokens.Count)
+            for(var i = index; index < tokens.Count; i++)
             {
                 var token = tokens[index];
                 index++;
@@ -49,42 +45,37 @@ namespace BrainFuck
                     // trivia or instruction token
                     if(previousToken?.Type == token.Type)
                     {
-                        previousTree?.Add(token);
+                        // same token as before, add to previous tree:
+                        AddIfNotNull(previousTree, token);
                     }
                     else
                     {
-                        if (previousTree != null)
-                        {
-                            root.Add(previousTree);
-                        }
+                        // new token, add previous tree to root and get a new tree:
+                        AddIfNotNull(parent, previousTree);
 
                         currentTree = treeFactory.Invoke();
-                        currentTree.Add(token);
+                        AddIfNotNull(currentTree, token);
                     }
                 }
                 else
                 {
-                    // control flow token
-                    if(previousTree != null)
-                    {
-                        root.Add(previousTree);
-                    }
+                    // new control flow token, add previous tree to root:
+                    AddIfNotNull(parent, previousTree);
+
                     switch(token.Type)
                     {
                         case TokenType.BeginLoop:
                             depth++;
+                            // note: recursive
                             currentTree = Parse(tokens, ref index, ref depth, new LoopBlockSyntax { token });
                             break;
 
                         case TokenType.EndLoop:
-                            if(depth == 0)
-                            {
-                                throw new IllegalTokenException(token);
-                            }
+                            if(depth == 0) { throw new IllegalTokenException(token); }
                             depth--;
 
-                            root.Add(token);
-                            return root;
+                            AddIfNotNull(parent, token);
+                            return parent;
 
                         default:
                             throw new IllegalTokenException(token);
@@ -95,11 +86,21 @@ namespace BrainFuck
                 previousTree = currentTree;
             }
 
-            if (previousTree != null)
+            AddIfNotNull(parent, previousTree);
+            return parent;
+        }
+
+        private static void AddIfNotNull(SyntaxTree tree, Token token)
+        {
+            tree?.Add(token);
+        }
+
+        private static void AddIfNotNull(SyntaxTree root, SyntaxTree tree)
+        {
+            if (tree != null)
             {
-                root.Add(previousTree);
+                root?.Add(tree);
             }
-            return root;
         }
     }
 }
